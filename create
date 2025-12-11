@@ -1,0 +1,36 @@
+import ttkbootstrap as ttk
+from banco import criar_usuario
+from teladois import abrir_tela_boas_vindas
+from ttkbootstrap.dialogs import Messagebox
+
+def abrir_cadastro(retornar):
+    def cadastrar():
+        user = entry_usuario.get()
+        senha = entry_senha.get()
+        email = entry_email.get()
+        if not user or not senha or not email:
+            Messagebox.show_warning("Erro", "Preencha todos os campos")
+            return
+        try:
+            criar_usuario(user, senha, email)
+            janela.destroy()
+            abrir_tela_boas_vindas(user, retornar)
+        except:
+            Messagebox.show_error("Erro", "Usuário já existe")
+
+    janela = ttk.Window(themename="cosmo")
+    janela.title("Cadastro")
+    janela.geometry("300x300")
+
+    ttk.Label(janela, text="Cadastro", font=("Arial", 16)).pack(pady=10)
+    ttk.Label(janela, text="Usuário").pack()
+    entry_usuario = ttk.Entry(janela)
+    entry_usuario.pack()
+    ttk.Label(janela, text="Senha").pack()
+    entry_senha = ttk.Entry(janela, show="*")
+    entry_senha.pack()
+    ttk.Label(janela, text="Email").pack()
+    entry_email = ttk.Entry(janela)
+    entry_email.pack()
+    ttk.Button(janela, text="Cadastrar", bootstyle="success-outline", command=cadastrar).pack(pady=20)
+    janela.mainloop()
