@@ -1,0 +1,31 @@
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from banco import listar_usuarios, atualizar_usuario, excluir_usuario
+from ttkbootstrap.dialogs import Messagebox
+
+def abrir_painel(usuario_logado):
+    janela = ttk.Window(themename="cosmo")
+    janela.title(f"Painel de Gerenciamento - {usuario_logado}")
+    janela.geometry("600x400")
+
+    tree = ttk.Treeview(janela, columns=("ID","Usuario","Email","Status"), show="headings")
+    tree.heading("ID", text="ID")
+    tree.heading("Usuario", text="Usuário")
+    tree.heading("Email", text="Email")
+    tree.heading("Status", text="Status")
+    tree.pack(fill="both", expand=True)
+
+
+    for user in listar_usuarios():
+        tree.insert("", "end", values=user)
+
+    def deletar():
+        selecionado = tree.selection()
+        if selecionado:
+            user_id = tree.item(selecionado)["values"][0]
+            excluir_usuario(user_id)
+            tree.delete(selecionado)
+            Messagebox.show_info("Sucesso", "Usuário excluído (status alterado).")
+
+    ttk.Button(janela, text="Excluir", bootstyle="danger", command=deletar).pack(pady=10)
+    janela.mainloop()
