@@ -1,0 +1,11 @@
+import ttkbootstrap as ttk
+
+def abrir_tela_boas_vindas(usuario, retornar):
+    janela = ttk.Window(themename="cosmo")
+    janela.title("Bem-vindo")
+    janela.geometry("300x200")
+
+    ttk.Label(janela, text=f"Cadastro realizado com sucesso!\nUsuário: {usuario}", font=("Arial", 14)).pack(pady=20)
+    ttk.Button(janela, text="OK", bootstyle="success-outline", command=lambda: (janela.destroy(), retornar())).pack(pady=20)
+
+    janela.mainloop()
