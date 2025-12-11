@@ -1,0 +1,61 @@
+import sqlite3
+import bcrypt
+
+DB_FILE = "usuarios.db"
+
+def conectar():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario TEXT UNIQUE,
+            senha TEXT,
+            email TEXT,
+            status INTEGER DEFAULT 1,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    return conn
+
+
+def criar_usuario(usuario, senha, email):
+    conn = conectar()
+    cursor = conn.cursor()
+    hash_senha = bcrypt.hashpw(senha.encode(), bcrypt.gensalt())
+    cursor.execute("INSERT INTO usuarios (usuario, senha, email) VALUES (?, ?, ?)", (usuario, hash_senha, email))
+    conn.commit()
+    conn.close()
+
+def listar_usuarios():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, usuario, email, status, criado_em FROM usuarios WHERE status=1")
+    resultado = cursor.fetchall()
+    conn.close()
+    return resultado
+
+def atualizar_usuario(id, usuario, email):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE usuarios SET usuario=?, email=? WHERE id=?", (usuario, email, id))
+    conn.commit()
+    conn.close()
+
+def excluir_usuario(id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE usuarios SET status=0 WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+
+def verificar_login(usuario, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT senha FROM usuarios WHERE usuario=? AND status=1", (usuario,))
+    resultado = cursor.fetchone()
+    conn.close()
+    if resultado and bcrypt.checkpw(senha.encode(), resultado[0]):
+        return True
+    return False
