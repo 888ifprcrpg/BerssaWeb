@@ -1,0 +1,95 @@
+import ttkbootstrap as ttk
+from banco import verificar_login
+from create import abrir_cadastro
+from tela import abrir_painel
+from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.constants import *
+
+def tela_inicial():
+    def logar():
+        user = entry_usuario.get()
+        senha = entry_senha.get()
+        if verificar_login(user, senha):
+            janela.destroy()
+            abrir_painel(user)
+        else:
+            Messagebox.show_error("Erro", "Usuário ou senha incorretos")
+
+    # Janela base com tema escuro
+    janela = ttk.Window(themename="darkly")
+    janela.title("Sistema de Login")
+    janela.geometry("360x330")
+    janela.resizable(False, False)
+
+    # ------------------------
+    # Estilos personalizados
+    # ------------------------
+    style = ttk.Style()
+
+    # Fundo principal
+    janela.configure(bg="#1C1F26")
+
+    # Estilo dos labels
+    style.configure(
+        "CustomLabel.TLabel",
+        background="#1C1F26",
+        foreground="#D7E3FC",
+        font=("Segoe UI", 10)
+    )
+
+    # Estilo do título
+    style.configure(
+        "Title.TLabel",
+        background="#1C1F26",
+        foreground="#4DA3FF",
+        font=("Segoe UI", 20, "bold")
+    )
+
+    # Estilo das entradas
+    style.configure(
+        "CustomEntry.TEntry",
+        padding=5,
+        foreground="#FFFFFF",
+        fieldbackground="#2A2F38"
+    )
+
+    # Container central
+    frame = ttk.Frame(janela, padding=20, bootstyle=DARK)
+    frame.pack(expand=True)
+
+    # Título
+    ttk.Label(frame, text="Acesso ao Sistema", style="Title.TLabel").pack(pady=(0, 20))
+
+    # Usuário
+    ttk.Label(frame, text="Usuário:", style="CustomLabel.TLabel").pack(anchor="w")
+    entry_usuario = ttk.Entry(frame, width=30, style="CustomEntry.TEntry")
+    entry_usuario.pack(pady=(0, 12))
+
+    # Senha
+    ttk.Label(frame, text="Senha:", style="CustomLabel.TLabel").pack(anchor="w")
+    entry_senha = ttk.Entry(frame, width=30, show="*", style="CustomEntry.TEntry")
+    entry_senha.pack(pady=(0, 20))
+
+    # Botão Login
+    ttk.Button(
+        frame,
+        text="Entrar",
+        bootstyle="info",
+        width=25,
+        command=logar
+    ).pack(pady=5)
+
+    # Botão Cadastro
+    ttk.Button(
+        frame,
+        text="Cadastrar",
+        bootstyle="secondary-outline",
+        width=25,
+        command=lambda: (janela.destroy(), abrir_cadastro(tela_inicial))
+    ).pack(pady=5)
+
+    janela.mainloop()
+
+
+if __name__ == "__main__":
+    tela_inicial()
